@@ -1,6 +1,16 @@
 import { Request,  Response  } from 'express';
 const cheerio = require('cheerio');
 const axios = require('axios');
+import  { scrapeIt, scrapeWebsite, scrapeAsync } from '../middlewares/';
+
+/*async function scrapeIt (url, opts) {
+  const res = await req(url)
+  let scrapedData = scrapeIt.scrapeHTML(res.$, opts)
+  return Object.assign(res, {
+      data: scrapedData,
+      body: res.data
+  })
+}*/
 
 async function searchWebPages(query: string) {
   
@@ -51,7 +61,7 @@ async function scrapeWebPage(query: string) {
       
       // Cargar el HTML en Cheerio
       const $ = cheerio.load(html);
-      
+      console.log($);
       // Encontrar los elementos que deseas extraer
       const title = $('title').text();
       const paragraph = $('p').first().text();
@@ -77,4 +87,18 @@ export const scrapearWeb = async (req: Request, resp: Response) => {
     } catch (error) {
         resp.status(401).json({ err: error });
     }
+}
+
+export const scrapearIt = async (req: Request, resp: Response) => {
+  const query: string = encodeURI(req.body.query);
+  try {        
+      let links: any = await scrapeWebsite();
+      if (links.length==0) {
+          return resp.status(402).json({ msg: "Sin resultado" });
+      }
+      resp.status(200).json(links);
+
+  } catch (error) {
+      resp.status(401).json({ err: error });
+  }
 }
