@@ -1,22 +1,15 @@
 import { Request,  Response  } from 'express';
 const cheerio = require('cheerio');
-const axios = require('axios');
-import  { scrapeIt, scrapeWebsite, scrapeAsync } from '../middlewares/';
-
-/*async function scrapeIt (url, opts) {
-  const res = await req(url)
-  let scrapedData = scrapeIt.scrapeHTML(res.$, opts)
-  return Object.assign(res, {
-      data: scrapedData,
-      body: res.data
-  })
-}*/
+import axios from 'axios';
+//import axiosRetry from 'retry-axios';
+import  { scrapeIt, scrapeWebsite, scrapeAsync } from '../middlewares/scrapeIt';
 
 async function searchWebPages(query: string) {
-  
+  console.log(query);
   try {
     // Hacer una solicitud GET a Google con la consulta de búsqueda
     const response = await axios.get(`https://www.google.com/search?q=${query}`);
+    
     const html = response.data;    
     // Cargar el HTML en Cheerio
     const $ = cheerio.load(html);    
@@ -49,14 +42,10 @@ export const getUrlWeb = async (req: Request, resp: Response) => {
     }
 }
 
-async function scrapeWebPage(query: string) {    
-    try {
-      console.log(query);
-      let links: any = await searchWebPages(query);
-       
-      // Obtener el HTML de la página web
-      console.log(links[0]);
-      const response = await axios.get('https://www.conlallave.com/casas-en-venta.html');
+async function scrapeWebPage(url: string) {    
+    try {      
+      
+      const response = await axios.get(`${url}`);
       const html = response.data;
       
       // Cargar el HTML en Cheerio
@@ -65,10 +54,23 @@ async function scrapeWebPage(query: string) {
       // Encontrar los elementos que deseas extraer
       const title = $('title').text();
       const paragraph = $('p').first().text();
-      console.log('Título:', title);
-      console.log('Párrafo:', paragraph);
+      const contains = $('contains').text();
+      const load = $('load').text();
+      const xml = $('xml').text();
+      const text = $('text').text();
+      const parseHTML = $('parseHTML').text();
+      const htmlx = $('html').text();
       // Imprimir los resultados
-      return ({titulo: title, parrafo: paragraph});
+      return ({
+        titulo: title, 
+        parrafo: paragraph, 
+        contenido: contains,
+        carga: load,
+        xml: xml,
+        texto: text,
+        phtml: parseHTML,
+        hipertexto: htmlx,
+      });
       
     } catch (error) {
       console.error(error);
@@ -76,9 +78,9 @@ async function scrapeWebPage(query: string) {
 }
 
 export const scrapearWeb = async (req: Request, resp: Response) => {
-    const query: string = encodeURI(req.body.query);
+    const url: string = encodeURI(req.body.url);
     try {        
-        let links: any = await scrapeWebPage(query);        
+        let links: any = await scrapeWebPage(url);        
         if (links.length==0) {
             return resp.status(402).json({ msg: "Sin resultado" });
         }
@@ -89,11 +91,25 @@ export const scrapearWeb = async (req: Request, resp: Response) => {
     }
 }
 
-export const scrapearIt = async (req: Request, resp: Response) => {
+export const scrapeAsincrono = async (req: Request, resp: Response) => {
+  const query: string = encodeURI(req.body.query);
+  try {        
+      let data: any = await scrapeAsync();
+      if (!data) {
+          return resp.status(402).json({ msg: "Sin resultado" });
+      }
+      resp.status(200).json(data);
+
+  } catch (error) {
+      resp.status(401).json({ err: error });
+  }
+}
+
+export const scrapeSite = async (req: Request, resp: Response) => {
   const query: string = encodeURI(req.body.query);
   try {        
       let links: any = await scrapeWebsite();
-      if (links.length==0) {
+      if (!links) {
           return resp.status(402).json({ msg: "Sin resultado" });
       }
       resp.status(200).json(links);
