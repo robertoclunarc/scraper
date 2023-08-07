@@ -42,43 +42,107 @@ export const getUrlWeb = async (req: Request, resp: Response) => {
     }
 }
 
-async function scrapeWebPage(url: string) {    
-    try {      
-      
-      const response = await axios.get(`${url}`);
-      const html = response.data;
-      
-      // Cargar el HTML en Cheerio
-      const $ = cheerio.load(html);
-      console.log($);
-      // Encontrar los elementos que deseas extraer
-      const title = $('title').text();
-      const paragraph = $('p').first().text();
-      const contains = $('contains').text();
-      const load = $('load').text();
-      const xml = $('xml').text();
-      const text = $('text').text();
-      const parseHTML = $('parseHTML').text();
-      const htmlx = $('html').text();
-      // Imprimir los resultados
-      return ({
-        titulo: title, 
-        parrafo: paragraph, 
-        contenido: contains,
-        carga: load,
-        xml: xml,
-        texto: text,
-        phtml: parseHTML,
-        hipertexto: htmlx,
-      });
-      
-    } catch (error) {
-      console.error(error);
+async function getNumPages($: cheerio.Root){  
+  const lastPageNumber: number[]=[];
+  $('div.pagination ul li a').each((index: number, element: cheerio.Element) => {
+    const text = $(element).text().trim();    
+    const pag = parseInt(text);
+    if (typeof(pag)=='number'&& pag>=1) {
+      lastPageNumber.push(pag);
+    }        
+  });
+  let nroPag = 1;
+  if (lastPageNumber.length){
+    nroPag = Math.max(...lastPageNumber)
+  }
+  // Imprimir el número de la última página
+  return(nroPag);
+}
+
+async function getViviendas($: cheerio.Root) {
+ 
+  const propertyListings: string[] = [];
+  $('li.property-listing.clearfix').each((index: number, element: cheerio.Element) => {
+    const propertyContentWithUnwantedChars = $(element).html();
+    if (propertyContentWithUnwantedChars) {
+        const propertyContent = propertyContentWithUnwantedChars.replace(/\n/g, '').trim();
+        propertyListings.push(propertyContent);
     }
+  });        
+
+  // Crear el arreglo de objetos "viviendas"
+  const viviendas = propertyListings.map((listing) => {
+    const $listing = cheerio.load(listing);
+
+    const img = $listing('div.photo img').attr('src');
+    const name = $listing('div.description h4.name a').text();
+    const price = $listing('div.description span.listing-type-price').text().trim();
+    //const location = $listing('div.description p').text().trim();
+    const measure = $listing('div.description ul.info li').text().trim();
+
+    // Obtener el valor de la propiedad location o adviser dependiendo del contexto
+    let location = '';
+    let adviser = '';
+    $listing('div.description p').each((index: number, element: cheerio.Element) => {
+        const text = $(element).text().trim();
+        if (text.startsWith('Asesor:')) {
+            adviser = text.replace('Asesor:', '').trim();
+        } else {
+            location = text;
+        }
+    });
+
+    return {
+        img: img,
+        name: name,
+        price: price,
+        measure: measure,
+        location: location,
+        adviser: adviser,
+    };
+  });
+  return viviendas;
+}
+
+async function scrapeWebPage(url: string) {    
+  try {    
+    const response = await axios.get(`${url}`);
+    const html = response.data;
+    
+    // Cargar el HTML en Cheerio
+    const $ = cheerio.load(html);
+
+    // Obtener el número de la última página del paginador
+    let nroPag = await getNumPages($);
+    console.log(nroPag);
+    
+    const bodyContentWithUnwantedChars = $('body').html();
+    // Limpiar el contenido del <body> de los caracteres no deseados (\n, espacios en blanco adicionales)
+    const bodyContent = bodyContentWithUnwantedChars.replace(/\n/g, '').trim();
+    let viviendas: any[]=[];
+    let homes : any[];
+    for (let i = 1; i<= nroPag; i++){
+      homes =[];
+      let uri: string  = `${url}?page=${i}`;
+      let resp = await axios.get(`${uri}`);
+      let _html = resp.data;    
+      let $page = cheerio.load(_html);
+      homes = await getViviendas($page);
+      viviendas = viviendas.concat(homes);
+    }    
+    
+    console.log(`Nro. de elementos: ${viviendas.length}`)
+    return({
+      body: bodyContent,
+      viviendas
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export const scrapearWeb = async (req: Request, resp: Response) => {
-    const url: string = encodeURI(req.body.url);
+    const url: string = encodeURI(req.body.url);    
     try {        
         let links: any = await scrapeWebPage(url);        
         if (links.length==0) {
