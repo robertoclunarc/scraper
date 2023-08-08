@@ -4,22 +4,17 @@ const scrapeIt = require("../lib")
 
 // Promise interface
 function scrapeWebsite() {
-  return scrapeIt("https://www.puntacanasolutions.com/properties/republica-dominicana/la-altagracia/house-type?page=1&sort_by=price-asc&gclid=EAIaIQobChMI5Kj50tyk_gIVsBCzAB0Z1ASYEAAYAiAAEgJfbPD_BwE", {
-    title: ".header h1",
-    desc: ".header h2",
-    avatar: {
-      selector: ".header img",
-      attr: "src",
-    },
+  return scrapeIt("https://remaxrd.com/_next/static/chunks/pages/propiedades/comprar-54106a24ae865e0b.js", {
+    html: { selector: "body", how: "html" } // Seleccionar todo el contenido del cuerpo del documento como HTML
   }).then(({ data, status }) => {
     console.log(`Status Code: ${status}`);
-    return ({status, data});
+    return { status, data };
   });
 }
 
 // Async-Await
 async function scrapeAsync() {
-  const { data } = await scrapeIt("https://www.puntacanasolutions.com/properties/republica-dominicana/la-altagracia/house-type?page=1&sort_by=price-asc&gclid=EAIaIQobChMI5Kj50tyk_gIVsBCzAB0Z1ASYEAAYAiAAEgJfbPD_BwE", {
+  const { data } = await scrapeIt("https://remaxrd.com/propiedades?businessTypes=sale&currencyType=us&typeProperty[]=apartment&typeProperty[]=house", {
   // Fetch the articles
     articles: {
       listItem: ".article",

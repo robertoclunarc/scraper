@@ -1,6 +1,7 @@
 /dist
 /tmp
 /buid
+.env
 
 # dependencies
 /node_modules
