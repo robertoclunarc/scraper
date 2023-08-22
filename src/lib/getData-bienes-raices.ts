@@ -1,5 +1,6 @@
+import { IPage, IPagesGroup } from "interfaces/paginas.interface";
 import db from "../database";
-import { IPage, IPagesGroup } from '../interfaces';
+
 
 export const SelectPagesAll = async () => {
     let consulta = "SELECT * FROM paginas";

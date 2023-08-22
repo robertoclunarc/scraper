@@ -1,5 +1,7 @@
 import { Router } from "express";
-import { getUrlWeb, scrapearPuntaCana, scrapeSite, scrapeAsincrono, scrapearRemax } from "../controllers/scraping.controller";
+import { getUrlWeb, scrapeSite, scrapeAsincrono } from "../controllers/scraping.controller";
+import { scrapearPuntaCana } from '../controllers/punta-cana.controller';
+import { scrapearRemax } from '../controllers/remax.controller';
 const router:Router = Router();
 
 router.post('/scraping/get/links', getUrlWeb);
