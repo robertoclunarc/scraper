@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 import axios from 'axios';
 //import axiosRetry from 'retry-axios';
 import  { scrapeIt, scrapeWebsite, scrapeAsync, } from '../middlewares/scrapeIt';
-import { IRemax } from '../interfaces'
+import { IRemax, IPuntaCana, IProperty, IAgent } from '../interfaces'
 
 async function getDataFromAPI(apiUrl: string): Promise<IRemax[]> {  
   try {
@@ -83,15 +83,16 @@ async function getViviendas($: cheerio.Root) {
   });        
 
   // Crear el arreglo de objetos "viviendas"
-  const viviendas = propertyListings.map((listing) => {
+  const viviendas = propertyListings.map(async (listing) => {
     const $listing = cheerio.load(listing);
 
-    const img = $listing('div.photo img').attr('src');
-    const name = $listing('div.description h4.name a').text();
+    const img = $listing('div.photo img').attr('src');    
+    const name = $listing('div.description h4.name a').text();    
     const price = $listing('div.description span.listing-type-price').text().trim();
     //const location = $listing('div.description p').text().trim();
     const measure = $listing('div.description ul.info li').text().trim();
-
+    const url: string  = "https://www.puntacanasolutions.com" + $listing('div.photo a').attr('href');
+    
     // Obtener el valor de la propiedad location o adviser dependiendo del contexto
     let location = '';
     let adviser = '';
@@ -102,23 +103,130 @@ async function getViviendas($: cheerio.Root) {
         } else {
             location = text;
         }
-    });
+    });    
 
-    return {
-        img: img,
-        name: name,
-        price: price,
-        measure: measure,
-        location: location,
-        adviser: adviser,
+    const vivienda: IPuntaCana = {
+      img: img,
+      name: name,
+      price: price,
+      measure: measure,
+      location: location,
+      adviser: adviser,
+      url: url,
     };
+
+    return vivienda;
   });
   return viviendas;
 }
 
+async function getPropertyPuntaCana(url: string){
+  const uri: string =  url;
+  let resp = await axios.get(`${uri}`, { timeout: 120000 });
+  let _html = resp.data;    
+  let $page = cheerio.load(_html);
+  let photos: string[] = [];  
+  $page('img.rsImg').each((index: number, element: cheerio.Element) => {
+    const imageUrl = $page(element).attr('src'); // Obtener el atributo src
+    if (imageUrl) {
+      photos.push(imageUrl);
+    }
+  });
+  const details = $page('div#summary table tbody')
+    .children('tr')
+    .map((index: number, element: cheerio.Element) => {
+      const label = $page(element).children('td').eq(0).text().trim();
+      const value = $page(element).children('td').eq(1).text().trim();
+      return { label, value };
+    })
+  const detail = $page('div.info').text().trim();
+  const title = $page('div.col-sm-8 h1.title').text().trim();
+
+  let id: string="";
+  let price: string="";
+  let tipoPropiedad: string="";
+  let dormitorio: number=0;
+  let banos: number=0;
+  let superficie: string="";
+  let parking: number=0;
+
+  let asesor: string="";
+
+  for await (let det of details){   
+    switch (det.label) {
+      case 'ID:':
+        id = det.value;
+        break;
+      case 'Tipo:':
+        tipoPropiedad = det.value;
+        break;
+      case 'Precio de venta:':        
+        price=  det.value;
+        break;
+      case 'Dormitorios:':        
+        dormitorio=  det.value;
+        break;     
+      case 'Baños:':        
+        banos=  det.value;
+        break;
+      case 'Superficie total:' || 'Terreno:':        
+        superficie=  det.value;
+        break;
+      case 'Estacionamientos:':        
+        parking=  det.value;
+        break;
+      case 'Asesor:':        
+        asesor=  det.value;
+        break;  
+      default:
+        console.log(`Sorry, we are out of ${det.label}.`);
+    }
+  }
+
+  const locationLinks = $page('h2.location a');
+  const locationTexts = locationLinks.map((index: number, element: cheerio.Element) => {
+    return $page(element).text().trim();
+  }).get();
+  const locationsString: string = locationTexts.join(', ');
+
+  // Obtener la URL del iframe de Google Maps
+  const mapIframeSrc = $page('div.map-container iframe').attr('src');
+  // Extraer las coordenadas de la URL del iframe
+  const coordinatesRegex = /q=([-+]?\d+\.\d+),([-+]?\d+\.\d+)/;
+  const matches = mapIframeSrc.match(coordinatesRegex);
+  let latitude: any;
+  let longitude: any;
+  
+  if (matches && matches.length === 3) {
+    latitude = parseFloat(matches[1]);
+    longitude = parseFloat(matches[2]);
+  }  
+  
+  return {
+    photos: photos, 
+    property: {
+      titte: title,
+      details: detail,
+      parent_id: id,
+      price: price,
+      type_of_property: tipoPropiedad,
+      bedrooms: dormitorio,
+      bathrooms: banos,
+      mts_terrain: superficie,
+      parking_spaces: parking,
+      type_of_business:'Venta',
+      address: locationsString,
+      latitude: latitude?.toString(),
+      longitude: longitude?.toString(),
+    },
+    agent: { name: asesor},
+    body: $page('div.col-md-8').html()
+  };
+}
+
 async function scrapeWebPage(url: string) {    
   try {    
-    const response = await axios.get(`${url}`);
+    const response = await axios.get(`${url}`, { timeout: 120000 });// Espera de 10 segundos (en milisegundos)
     const html = response.data;
     
     // Cargar el HTML en Cheerio
@@ -126,41 +234,65 @@ async function scrapeWebPage(url: string) {
 
     // Obtener el número de la última página del paginador
     let nroPag = await getNumPages($);
-    console.log(nroPag);
     
     const bodyContentWithUnwantedChars = $('body').html();
     // Limpiar el contenido del <body> de los caracteres no deseados (\n, espacios en blanco adicionales)
     const bodyContent = bodyContentWithUnwantedChars.replace(/\n/g, '').trim();
-    let viviendas: any[]=[];
+    let viviendasPromises: any[]=[];
     let homes : any[];
     for (let i = 1; i<= nroPag; i++){
       homes =[];
       let uri: string  = `${url}?page=${i}`;
-      let resp = await axios.get(`${uri}`);
+      let resp = await axios.get(`${uri}`, { timeout: 120000 });
       let _html = resp.data;    
       let $page = cheerio.load(_html);
       homes = await getViviendas($page);
-      viviendas = viviendas.concat(homes);
-    }    
+      
+      viviendasPromises = viviendasPromises.concat(homes);
+    } 
+    const allViviendas = await Promise.all(viviendasPromises);
+    const viviendas = allViviendas.reduce((accumulator, current) => accumulator.concat(current), []);
     
     console.log(`Nro. de elementos: ${viviendas.length}`)
-    return({
+    return {
       body: bodyContent,
-      viviendas
-    });
+      viviendas: viviendas,
+    };
   } catch (error) {
     console.error(error);
   }
 }
 
-export const scrapearWeb = async (req: Request, resp: Response) => {
+export const scrapearPuntaCana = async (req: Request, resp: Response) => {
     const url: string = encodeURI(req.body.url);    
     try {        
-        let links: any = await scrapeWebPage(url);        
-        if (links.length==0) {
+        let links = await scrapeWebPage(url);        
+        
+        if (!links) {
             return resp.status(402).json({ msg: "Sin resultado" });
         }
-        resp.status(200).json(links);
+        let arrayPuntaCana: {data?: IPuntaCana, property?: IProperty, photos?: string[], agent?: IAgent}[]=[];
+        let puntaCana: {data?: IPuntaCana, property?: IProperty, photos?: string[], agent?: IAgent};
+        let propertyPuntaCana: {body?: string, property?: IProperty, photos?: string[], agent?: IAgent } = {};
+        let scraping: any;
+        let index: number = 0;
+        for await (let pta of links?.viviendas){
+          if (index===15 || index===16 || index===6|| index===10){
+            puntaCana= {};          
+            propertyPuntaCana=await getPropertyPuntaCana(pta.url);
+            //quitar esta linea al terminar:
+            scraping=propertyPuntaCana.body;
+
+            puntaCana.data=pta
+            puntaCana.property=propertyPuntaCana.property;
+            puntaCana.photos = propertyPuntaCana.photos;
+            puntaCana.agent = propertyPuntaCana.agent;
+            arrayPuntaCana.push(puntaCana);  
+          }
+          index++;      
+        }
+        
+        resp.status(200).json({data: arrayPuntaCana, scraping: scraping});
 
     } catch (error) {
         resp.status(401).json({ err: error });
@@ -195,7 +327,7 @@ export const scrapeSite = async (req: Request, resp: Response) => {
   }
 }
 
-export const getInfoFromAPI = async (req: Request, resp: Response) => {
+export const scrapearRemax = async (req: Request, resp: Response) => {
   const url: string = encodeURI(req.body.url);
   try {        
       let links: IRemax[] = await getDataFromAPI(url)
