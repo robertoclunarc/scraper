@@ -168,6 +168,8 @@ async function getPropertyPuntaCana(url: string){
       address: locationsString,
       latitude: latitude?.toString(),
       longitude: longitude?.toString(),
+      url_map: mapIframeSrc,
+      url: url,
     },
     agent: { name: asesor},
     body: $page('div.col-md-8').html()
@@ -231,7 +233,7 @@ export const scrapearPuntaCana = async (req: Request, resp: Response) => {
             puntaCana= {};          
             propertyPuntaCana=await getPropertyPuntaCana(pta.url);            
             puntaCana.scraping=propertyPuntaCana.body;//quitar esta linea al terminar
-            puntaCana.data=pta
+            puntaCana.data=pta;
             puntaCana.property=propertyPuntaCana.property;
             puntaCana.photos = propertyPuntaCana.photos;
             puntaCana.agent = propertyPuntaCana.agent;

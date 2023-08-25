@@ -17,11 +17,13 @@ async function getDataFromAPI(apiUrl: string): Promise<IRemax[]> {
 export const scrapearRemax = async (req: Request, resp: Response) => {
   const url: string = encodeURI(req.body.url);
   try {        
-      let links: IRemax[] = await getDataFromAPI(url)
+      let links: IRemax[] = [];
+      const data: any = await getDataFromAPI(url);
       if (!links) {
           return resp.status(402).json({ msg: "Sin resultado" });
       }
-      console.log(`Nro de elementos: ${links.length}`)
+      links = data.data;
+      console.log(`Nro. de elementos en Remax: ${links.length}`)
       resp.status(200).json(links);
 
   } catch (error) {

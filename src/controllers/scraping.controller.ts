@@ -42,43 +42,6 @@ export const getUrlWeb = async (req: Request, resp: Response) => {
     }
 }
 
-/*
-export const scrapearPuntaCana = async (req: Request, resp: Response) => {
-    const url: string = encodeURI(req.body.url);    
-    try {        
-        let links = await scrapeWebPage(url);        
-        
-        if (!links) {
-            return resp.status(402).json({ msg: "Sin resultado" });
-        }
-        let arrayPuntaCana: {data?: IPuntaCana, property?: IProperty, photos?: string[], agent?: IAgent}[]=[];
-        let puntaCana: {data?: IPuntaCana, property?: IProperty, photos?: string[], agent?: IAgent};
-        let propertyPuntaCana: {body?: string, property?: IProperty, photos?: string[], agent?: IAgent } = {};
-        let scraping: any;
-        let index: number = 0;
-        for await (let pta of links?.viviendas){
-          if (index===15 || index===16 || index===6|| index===10){
-            puntaCana= {};          
-            propertyPuntaCana=await getPropertyPuntaCana(pta.url);
-            //quitar esta linea al terminar:
-            scraping=propertyPuntaCana.body;
-
-            puntaCana.data=pta
-            puntaCana.property=propertyPuntaCana.property;
-            puntaCana.photos = propertyPuntaCana.photos;
-            puntaCana.agent = propertyPuntaCana.agent;
-            arrayPuntaCana.push(puntaCana);  
-          }
-          index++;      
-        }
-        
-        resp.status(200).json({data: arrayPuntaCana, scraping: scraping});
-
-    } catch (error) {
-        resp.status(401).json({ err: error });
-    }
-}
-*/
 export const scrapeAsincrono = async (req: Request, resp: Response) => {
   const query: string = encodeURI(req.body.query);
   try {        
@@ -106,19 +69,3 @@ export const scrapeSite = async (req: Request, resp: Response) => {
       resp.status(401).json({ err: error });
   }
 }
-/*
-export const scrapearRemax = async (req: Request, resp: Response) => {
-  const url: string = encodeURI(req.body.url);
-  try {        
-      let links: IRemax[] = await getDataFromAPI(url)
-      if (!links) {
-          return resp.status(402).json({ msg: "Sin resultado" });
-      }
-      console.log(`Nro de elementos: ${links.length}`)
-      resp.status(200).json(links);
-
-  } catch (error) {
-      resp.status(401).json({ err: error });
-  }
-}
-*/

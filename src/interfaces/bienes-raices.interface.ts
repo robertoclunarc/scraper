@@ -18,6 +18,7 @@ export interface IProperty {
     bathrooms?: number;
     latitude?: string;
     longitude?: string;
+    url_map?: string;
     maintenance_fee?: string;
     is_collection?: number;
     status?: string;
@@ -39,4 +40,20 @@ export interface IAgent{
     phone_number?: string;
     photo?: string;
     photo_url?: string;
+}
+
+export interface ISector{
+    id?:number;
+    name?: string;
+}
+
+export interface Icity{
+    id?:number;
+    name?: string;
+}
+
+export interface IVideo{
+    id?:number;
+    id_property?: number;
+    video_url?: string;
 }
