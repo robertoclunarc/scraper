@@ -25,12 +25,13 @@ export interface IProperty {
     status_visit?: string;
     floor_number?: number;
     floors_total?: number;
-    bombs?: number;
+    pombs?: string;
     status_condition?: string;
     idpage?: number;
     iso_currency?: string;
     id_city?: number;
     id_sector?: string;
+    url?: string;
 }
 
 export interface IAgent{
@@ -57,3 +58,37 @@ export interface IVideo{
     id_property?: number;
     video_url?: string;
 }
+
+export interface ICurrency {
+    iso?: string;
+    symbol?: string;
+    idcurrency?: number;
+}
+
+export interface Iimprovements {
+    id_property?: number;    
+    name?: string;
+    value?: string;
+}
+
+export interface IPhoto {
+    id?: number;
+    id_property?: number;
+    large?: string;
+    small?: string;
+}
+
+export interface IPrppertyAgents{
+    id_property?: number;
+    id_agent?: number;
+}
+
+export interface IProject{
+    id?: number;
+    delivery_date?: string;
+    separation_price?: number;
+    iso_currency_separation?: string;
+    number_of_sets?: number;
+    number_of_units?: number;
+}    
+    

@@ -1,9 +1,9 @@
 export interface IRemax  {
-    id?: string,
+    id?: number,
     parent_id?: string,
     slug?: string,
     property_title?: string,
-    is_favorite?: string,
+    is_favorite?: number,
     address?: string,
     price?: string,
     alternate_price?: string,
@@ -16,9 +16,9 @@ export interface IRemax  {
     realstate_type?:string,
     sqm_construction?: string,
     sqm_land?:string,
-    parking_spots?: string,
-    bedrooms?: string,
-    bathrooms?: string,
+    parking_spots?: number,
+    bedrooms?: number,
+    bathrooms?: number,
     city?:string,
     city_id?: string,
     sector?: string,
@@ -35,7 +35,7 @@ export interface IRemax  {
     condition_status?: string,
     improvements?: 
         {
-            realstate_id?:string,
+            realstate_id?:number,
             name?: string,
             value?: string,
         }[],
@@ -58,7 +58,19 @@ export interface IRemax  {
         big?: string,
         small?: string,
     },
-    project?: string,
+    project?: {
+        id?: number,
+        delivers?: string,
+        separation_price?: number,
+        separation_currency?: {
+            iso?:string,
+            symbol?: string
+        },
+        sets_count?: number,
+        units_count?: number,
+        minimum_price?: number,
+        maximum_price?: number
+    }    
     agency?: string,
     agents?: 
         {
@@ -73,5 +85,5 @@ export interface IRemax  {
                 people_id?: string,
                 is_no_broker?: string,
             }
-        }[]        
+        }[]
 }
