@@ -28,9 +28,9 @@ export interface IProperty {
     pombs?: string;
     status_condition?: string;
     idpage?: number;
-    iso_currency?: string;
+    idcurrency?: number;
     id_city?: number;
-    id_sector?: string;
+    id_sector?: number;
     url?: string;
 }
 
@@ -78,9 +78,10 @@ export interface IPhoto {
     small?: string;
 }
 
-export interface IPrppertyAgents{
+export interface IPropertyAgents{
     id_property?: number;
     id_agent?: number;
+    is_no_coordinator?: number;
 }
 
 export interface IProject{
@@ -90,5 +91,17 @@ export interface IProject{
     iso_currency_separation?: string;
     number_of_sets?: number;
     number_of_units?: number;
-}    
+    id_property?:number;
+}
     
+export interface IRealState { 
+    property?: IProperty, 
+    currency?: ICurrency, 
+    city?: Icity, 
+    improvements?: Iimprovements[], 
+    sector?: ISector, 
+    photo?: IPhoto[], 
+    agents?: IAgent[], 
+    videos?: IVideo[], 
+    project?: IProject
+}

@@ -1,22 +1,25 @@
 import { Request,  Response  } from 'express';
 //const cheerio = require('cheerio');
+import dotenv from 'dotenv';
 import fetch from "node-fetch";
 import axios from 'axios';
 import { IRemax } from 'interfaces/remax.interface';
-import { IAgent, ICurrency, IPhoto, IProject, IProperty, ISector, IVideo, Icity, Iimprovements } from 'interfaces/bienes-raices.interface';
+import { IAgent, ICurrency, IPhoto, IProject, IProperty, IRealState, ISector, IVideo, Icity, Iimprovements } from 'interfaces/bienes-raices.interface';
+
+dotenv.config();
 
 async function getDataFromAPI(apiUrl: string): Promise<any[]> {  
   try {
     const response = await axios.get(apiUrl);
     const data: IRemax[] = response.data.data;
 
-    let propertys: { property?: IProperty, currency?: ICurrency, city?: Icity, improvements?: Iimprovements[], sector?: ISector, photo?: IPhoto, agents?: IAgent[], videos?: IVideo[], project?: IProject}[]=[];
+    let propertys: IRealState[]=[];
     let property: IProperty;
     let currency: ICurrency;
     let city: Icity;
     let improvements: Iimprovements[];
     let sector: ISector;
-    let photo: IPhoto;
+    let photo: IPhoto[];
     let agents: IAgent[];
     let videos: IVideo[];
     let project: IProject;
@@ -26,7 +29,7 @@ async function getDataFromAPI(apiUrl: string): Promise<any[]> {
       city={};
       sector={};
       improvements=[];
-      photo={};
+      photo=[];
       agents=[];
       videos=[];
       project={};
@@ -64,7 +67,7 @@ async function getDataFromAPI(apiUrl: string): Promise<any[]> {
            value: value,
         };
       }) || [];
-      photo = {small: dt.main_picture?.small, large: dt.main_picture?.big};
+      photo[0] = {small: dt.main_picture?.small, large: dt.main_picture?.big};
       agents = dt.agents?.map(agent => {
         const { name, email, phone, picture_url , picture} = agent;
         return {           
@@ -100,30 +103,48 @@ async function getDataFromAPI(apiUrl: string): Promise<any[]> {
 export const scrapearRemax = async (req: Request, resp: Response) => {
   const url: string = encodeURI(req.body.url);
   try {      
-      let links: { property?: IProperty, currency?: ICurrency, city?: Icity, improvements?: Iimprovements[], sector?: ISector, photo?: IPhoto, agents?: IAgent[], videos?: IVideo[], project?: IProject}[]=[];
+      let links: { property?: IProperty, currency?: ICurrency, city?: Icity, improvements?: Iimprovements[], sector?: ISector, photo?: IPhoto[], agents?: IAgent[], videos?: IVideo[], project?: IProject}[]=[];
       const data: any = await getDataFromAPI(url);
       if (!data) {
           return resp.status(402).json({ msg: "Sin resultado" });
       }
       links = data;
-      console.log(`Nro. de elementos en Remax: ${links.length}`)
+      console.log(`Nro. de elementos en Remax: ${links.length}`);
+      
+      resp.status(200).json(links);
+
+  } catch (error) {
+      resp.status(401).json({ err: error });
+  }
+}
+
+export const migrarRemax = async (req: Request, resp: Response) => {
+  const url: string = encodeURI(req.body.url);
+  try {      
+      let links: IRealState[]=[];
+      const data: any = await getDataFromAPI(url);
+      if (!data) {
+          return resp.status(402).json({ msg: "Sin resultado" });
+      }
+      links = data;
+      console.log(`Nro. de elementos en Remax: ${links.length}`);
       
       // Enviar los datos a la api-database
-      /*const apiDatabaseURL = "http://localhost:3700/save-data"; // Cambiar la URL según tu configuración
+      const apiDatabaseURL = process.env.URLREMAX || ''; // Cambiar la URL según tu configuración
+      console.log(`conectandose a ${apiDatabaseURL}`);
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data.data),
+        body: JSON.stringify(links),
       };
 
       const response = await fetch(apiDatabaseURL, requestOptions);
       const databaseResponse = await response.json();
 
-      console.log(`Respuesta de api-database:`, databaseResponse);*/
-      
-      resp.status(200).json(links);
-
+      console.log(`Respuesta de api-database:`, databaseResponse);      
+      resp.status(200).json({cosola: databaseResponse, data: links});
   } catch (error) {
+      
       resp.status(401).json({ err: error });
   }
 }
