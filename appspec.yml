@@ -1,0 +1,11 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/www/app
+    overwrite: true
+actions:
+  - type: copy
+  - type: install
+  - type: start
+    command: node dist/index.js
