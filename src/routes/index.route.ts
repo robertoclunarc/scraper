@@ -23,7 +23,6 @@ router.get('/', async (_req, res, _next) => {
       res.status(503).send(error);
     }
 });
-
 router.post('/scraping/get/links', getUrlWeb);
 router.post('/scraping/site',scrapeAsincrono );
 router.post('/scraping/web', scrapeSite );
