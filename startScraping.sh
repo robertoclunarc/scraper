@@ -9,4 +9,4 @@ cd /var/www/scraper
 
 # Inicia tu aplicación
 # Reemplaza "node index.js" con el comando real para iniciar tu aplicación
-~/.nvm/versions/node/v16.20.2/bin/node index.js
+node index.js
