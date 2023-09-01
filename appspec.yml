@@ -12,5 +12,5 @@ permissions:
 hooks:
   ApplicationStart:
     - location: /var/www/app/scraping/dist/scripts/start.sh
-      timeout: 360
+      timeout: 300
       runas: ec2-user
