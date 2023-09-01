@@ -5,12 +5,12 @@ files:
     destination: /var/www/app/scraping
     overwrite: true
 permissions:
-  - object: /var/www/app/scraping
+  - object: /
     pattern: "**"
     owner: ec2-user
     group: ec2-user
 hooks:
   ApplicationStart:
-    - location: /var/www/app/start.sh
+    - location: dist/scripts/start.sh
       timeout: 300
       runas: ec2-user
