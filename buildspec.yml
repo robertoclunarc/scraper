@@ -4,6 +4,7 @@ phases:
   install:
     runtime-versions:
       nodejs: 16
+  pre_build:
     commands:
       - npm install -g typescript
       - npm install
@@ -16,4 +17,4 @@ phases:
 artifacts:
   files:
     - '**/*'
-  base-directory: './dist'
+  base-directory: ./dist
