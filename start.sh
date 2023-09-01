@@ -5,8 +5,8 @@ cd /var/www/app/scraping
 
 # Instala las dependencias (si es necesario)
 # Esto asume que tu proyecto utiliza npm como gestor de paquetes
-npm install
+~/.nvm/versions/node/v16.20.2/bin/npm install
 
 # Inicia tu aplicación
 # Reemplaza "node index.js" con el comando real para iniciar tu aplicación
-node index.js
+~/.nvm/versions/node/v16.20.2/bin/node index.js
