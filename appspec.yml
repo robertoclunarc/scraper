@@ -11,6 +11,6 @@ permissions:
     group: ec2-user
 hooks:
   BeforeInstall:
-    - location: start.sh
+    - location: startScraping.sh
       timeout: 300
       runas: ec2-user
