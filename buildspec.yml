@@ -14,9 +14,11 @@ phases:
   post_build:
     commands:
       - cp -r dist/* /var/www/scraper
+      - cd dist
       - npm run start
       - echo Build completed on `date`
 artifacts:
   files:
     - '**/*'
   base-directory: ./dist
+
