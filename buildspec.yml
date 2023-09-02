@@ -11,6 +11,7 @@ phases:
   build:
     commands:
       - npm run build
+      - cp -r /path/to/compiled/files/* /var/www/scraper/
   post_build:
     commands:
       - cd dist
