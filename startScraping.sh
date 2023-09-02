@@ -8,4 +8,4 @@ cd /var/www/scraper
 
 # Inicia tu aplicación
 # Reemplaza "node index.js" con el comando real para iniciar tu aplicación
-node run start
+npm run start
