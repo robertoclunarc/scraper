@@ -9,3 +9,6 @@ cd /var/www/scraper
 # Instala las dependencias (si es necesario)
 # Esto asume que tu proyecto utiliza npm como gestor de paquetes
 npm install
+
+# Compila tu aplicacion
+npm run build
