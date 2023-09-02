@@ -14,6 +14,13 @@ hooks:
     - location: installDependenciesScraping.sh
       timeout: 300
       runas: ec2-user
+  ApplicationStop:
+    - location: stopScraping.sh
+      timeout: 300
+      runas: ec2-user
+      environment:
+        variables:
+          NODE_PID: "14709"
   ApplicationStart:
     - location: startScraping.sh
       timeout: 600
