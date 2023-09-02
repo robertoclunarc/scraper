@@ -11,11 +11,10 @@ phases:
   build:
     commands:
       - npm run build
-      - cp -r /path/to/compiled/files/* /var/www/scraper/
   post_build:
     commands:
-      - cd dist
-      - node index.js
+      - cp -r dist/* /var/www/scraper
+      - npm run start
       - echo Build completed on `date`
 artifacts:
   files:
