@@ -12,4 +12,4 @@ npm install
 
 # Inicia tu aplicación
 # Reemplaza "node index.js" con el comando real para iniciar tu aplicación
-node dist/index.js
+node "$PWD/dist/index.js"
