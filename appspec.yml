@@ -18,3 +18,4 @@ hooks:
     - location: startScraping.sh
       timeout: 1200
       runas: ec2-user
+      

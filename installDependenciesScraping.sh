@@ -6,9 +6,8 @@ source ~/.nvm/nvm.sh
 # Navega al directorio donde se encuentra tu aplicación
 cd /var/www/scraper
 
-# Instala las dependencias (si es necesario)
-# Esto asume que tu proyecto utiliza npm como gestor de paquetes
+# Instala las dependencias 
 npm install
 
-# Compila tu aplicacion
+# Compilae la aplicacion
 npm run build

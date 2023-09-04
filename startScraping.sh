@@ -6,6 +6,5 @@ source ~/.nvm/nvm.sh
 # Navega al directorio donde se encuentra tu aplicación
 cd /var/www/scraper
 
-# Inicia tu aplicación
-# Reemplaza "node index.js" con el comando real para iniciar tu aplicación
+# iniciar la aplicación
 npm run start
