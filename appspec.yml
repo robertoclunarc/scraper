@@ -12,10 +12,9 @@ permissions:
 hooks:
   AfterInstall:
     - location: installDependenciesScraping.sh
-      timeout: 360
+      timeout: 300
       runas: ec2-user
   ApplicationStart:
     - location: startScraping.sh
       timeout: 1200
       runas: ec2-user
-      
