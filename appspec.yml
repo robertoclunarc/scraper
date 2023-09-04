@@ -23,5 +23,5 @@ hooks:
           NODE_PID: "14709"
   ApplicationStart:
     - location: startScraping.sh
-      timeout: 600
+      timeout: 1200
       runas: ec2-user
