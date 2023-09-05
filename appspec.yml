@@ -16,5 +16,5 @@ hooks:
       runas: ec2-user
   ApplicationStart:
     - location: startScraping.sh
-      timeout: 1200
+      timeout: 300
       runas: ec2-user
