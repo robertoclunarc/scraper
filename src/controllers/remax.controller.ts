@@ -121,7 +121,7 @@ export const scrapearRemax = async (req: Request, resp: Response) => {
 }
 
 export const migrarRemax = async (req: Request, resp: Response) => {
-  console.log(req.body.url);
+  
   const url: string = encodeURI(req.body.url);
   try {      
       let links: IRealState[]=[];
