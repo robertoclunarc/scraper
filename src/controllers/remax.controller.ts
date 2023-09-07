@@ -10,6 +10,7 @@ dotenv.config();
 
 async function getDataFromAPI(apiUrl: string): Promise<any[]> {  
   try {
+    console.log(`conectandose a: ${apiUrl}`)
     const response = await axios.get(apiUrl);
     const data: IRemax[] = response.data.data;
 
