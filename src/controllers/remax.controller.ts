@@ -10,8 +10,8 @@ dotenv.config();
 
 async function getDataFromAPI(apiUrl: string): Promise<any[]> {  
   try {
-    console.log(`conectandose a: ${apiUrl}`)
-    const response = await axios.get(apiUrl);
+    console.log(`conectandose a: ${apiUrl}`);
+    const response = await axios.get(apiUrl, { timeout: 120000 });
     const data: IRemax[] = response.data.data;
 
     let propertys: IRealState[]=[];
@@ -102,9 +102,10 @@ async function getDataFromAPI(apiUrl: string): Promise<any[]> {
 }
 
 export const scrapearRemax = async (req: Request, resp: Response) => {
+  
   const url: string = encodeURI(req.body.url);
   try {      
-      let links: { property?: IProperty, currency?: ICurrency, city?: Icity, improvements?: Iimprovements[], sector?: ISector, photo?: IPhoto[], agents?: IAgent[], videos?: IVideo[], project?: IProject}[]=[];
+      let links: IRealState[]=[];
       const data: any = await getDataFromAPI(url);
       if (!data) {
           return resp.status(402).json({ msg: "Sin resultado" });
@@ -120,6 +121,7 @@ export const scrapearRemax = async (req: Request, resp: Response) => {
 }
 
 export const migrarRemax = async (req: Request, resp: Response) => {
+  console.log(req.body.url);
   const url: string = encodeURI(req.body.url);
   try {      
       let links: IRealState[]=[];

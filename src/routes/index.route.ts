@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Router } from "express";
 import { getUrlWeb, scrapeSite, scrapeAsincrono } from "../controllers/scraping.controller";
 import { scrapearPuntaCana } from '../controllers/punta-cana.controller';
@@ -6,19 +7,39 @@ import { scrapearPerezRealState } from '../controllers/perez-real-state.controll
 const router:Router = Router();
 
 class HealthChecker {
-    static check() {
-     return {
-        uptime: process.uptime(),
-        response: process.hrtime(),
-        message: 'OK',
-        timestamp: Date.now()
-      };
+  static async check() {
+    const healthChecker = new HealthChecker();
+    const testConec = await healthChecker.testConnection();
+    return {
+      uptime: process.uptime(),
+      response: process.hrtime(),
+      message: 'OK',
+      Axios: testConec,
+      timestamp: Date.now(),
+    };
+  }
+
+  async testConnection() {
+    let message: any;
+    let isError = false;
+    try {
+      await axios.get('https://www.google.com');
+      message = 'Conexión establecida!';
+    } catch (err) {
+      message = err;
+      isError = true;
     }
+    console.log(message);
+
+    return {
+      status: isError ? 'Error' : 'OK',  message,
+    };
+  }
 }
 
 router.get('/', async (_req, res, _next) => {
     try {
-      res.send(HealthChecker.check());
+      res.send(await HealthChecker.check());
     } catch (error) {
       res.status(503).send(error);
     }
