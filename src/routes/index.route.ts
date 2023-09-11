@@ -49,7 +49,6 @@ router.post('/scraping/site',scrapeAsincrono );
 router.post('/scraping/web', scrapeSite );
 router.post('/scraping/puntacana', scrapearPuntaCana );
 router.post('/scraping/remax', scrapearRemax );
-router.post('/scraping/migrar/remax', migrarRemax);
 router.post('/scraping/perezrealstate', scrapearPerezRealState );
 
 export default router;

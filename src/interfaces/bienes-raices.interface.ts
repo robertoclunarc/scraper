@@ -92,6 +92,7 @@ export interface IProject{
     number_of_sets?: number;
     number_of_units?: number;
     id_property?:number;
+    idcurrency?: number;
 }
     
 export interface IRealState { 

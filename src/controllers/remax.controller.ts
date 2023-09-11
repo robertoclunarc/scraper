@@ -58,7 +58,7 @@ async function getDataFromAPI(apiUrl: string): Promise<any[]> {
         status: dt.status,        
         floors_total: Number(dt.floors_total),		    
       };
-      currency= { idcurrency: Number(dt.parent_id), iso: dt.currency?.iso, symbol: dt.currency?.symbol  };
+      currency= { iso: dt.currency?.iso, symbol: dt.currency?.symbol  };
       city={ name: dt.city};
       sector = {name: dt.sector};
       improvements = dt.improvements?.map(improvement => {
