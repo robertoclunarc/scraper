@@ -49,7 +49,7 @@ async function getDataFromAPI(apiUrl: string): Promise<any[]> {
         address: `${dt.city} ${dt.sector}`,
         longitude: dt.longitude,
         latitude: dt.latitude,
-        parent_id: dt.parent_id,
+        parent_id: dt.parent_id!==undefined ? dt.parent_id : "0",
 		    slug: dt.slug,
         is_favorite: dt.is_favorite,        
         alternative_price: dt.alternate_price,

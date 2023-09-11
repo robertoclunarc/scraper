@@ -58,7 +58,7 @@ async function getPropertyPerezRealState(url: string){
             status_condition = det.value != undefined ? det.value : "";
           break;
         case 'ID de la propriété:':        
-          id = det.value != undefined ? det.value : "";
+          id = det.value != undefined ? det.value : "0";
         break;   
         default:
           console.log(`Si te interesa, dispones del valor: ${det.label}.`);
