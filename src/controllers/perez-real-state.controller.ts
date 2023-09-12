@@ -98,7 +98,7 @@ async function getPropertyPerezRealState(url: string){
       property: {
         title: title,
         details: detail,
-        parent_id: id,
+        parent_id: id.length>=10 ? id.substring(0, 4) : id,
         price: price,
         type_of_property: tipoPropiedad !=="" ? tipoPropiedad : 'ANY' ,
         bedrooms: dormitorio,
