@@ -21,8 +21,8 @@ async function getPropertyPerezRealState(url: string){
     let iso: string="";
     let id: string="";    
     let tipoPropiedad: string="";
-    let dormitorio: number=0;
-    let banos: number=0;
+    let dormitorio: string="0";
+    let banos: string="0";
     let superficie: string="";
     let parking: number=0;
     let status_condition: string = "";
@@ -113,7 +113,7 @@ async function getPropertyPerezRealState(url: string){
       },
       agents: [{ name: asesor, phone_number: agentPhones, photo_url: agentPhotoUrl}],
       city: {name:detailCity },
-      sector: {name: detailArea},
+      sector: {name: detailArea == undefined ? locationsString : detailArea},
       videos: [{video_url: srcVideo}],
       currency:{ iso: iso!=="" ? iso: "USD", symbol: "$" },
     };

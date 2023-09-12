@@ -101,8 +101,8 @@ async function getPropertyPuntaCana(url: string){
     let price: string="";
     let iso: string="";
     let tipoPropiedad: string="";
-    let dormitorio: number=0;
-    let banos: number=0;
+    let dormitorio: string="0";
+    let banos: string="0";
     let superficie: string="";
     let parking: number=0;
 

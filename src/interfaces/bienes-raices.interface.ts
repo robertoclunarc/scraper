@@ -14,8 +14,8 @@ export interface IProperty {
     mts_construction?: string;
     mts_terrain?: string;
     parking_spaces?: number;
-    bedrooms?:number;
-    bathrooms?: number;
+    bedrooms?:string;
+    bathrooms?: string;
     latitude?: string;
     longitude?: string;
     url_map?: string;
