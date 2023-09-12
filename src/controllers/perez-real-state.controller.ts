@@ -115,7 +115,7 @@ async function getPropertyPerezRealState(url: string){
       city: {name:detailCity },
       sector: {name: detailArea},
       videos: [{video_url: srcVideo}],
-      currency:{ iso: iso!=="" ? iso: "$" },
+      currency:{ iso: iso!=="" ? iso: "USD", symbol: "$" },
     };
     
     return property;
@@ -164,7 +164,8 @@ export const scrapearPerezRealState = async (req: Request, resp: Response) => {
           agents: data.agents,
           city: data.city,
           sector: data.sector,
-          videos: data.videos,                  
+          videos: data.videos,
+          currency: data.currency,
         };            
     }));
     //ArrayProperty = ArrayProperty.filter(pro => {pro.property!==undefined});
