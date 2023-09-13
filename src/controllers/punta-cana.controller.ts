@@ -135,7 +135,7 @@ async function getPropertyPuntaCana(url: string){
           asesor=  det.value;
           break;  
         default:
-          console.log(`Sorry, we are out of ${det.label}.`);
+          console.log(`Si te interesa, esta disponible el valor de: ${det.label}.`);
       }
     }
 
@@ -156,15 +156,15 @@ async function getPropertyPuntaCana(url: string){
     const mapIframeSrc = $page('div.map-container iframe').attr('src');
     // Extraer las coordenadas de la URL del iframe
     const coordinatesRegex = /q=([-+]?\d+\.\d+),([-+]?\d+\.\d+)/;
-    const matches = mapIframeSrc.match(coordinatesRegex);
     let latitude: any;
     let longitude: any;
-    
-    if (matches && matches.length === 3) {
-      latitude = parseFloat(matches[1]);
-      longitude = parseFloat(matches[2]);
+    if (mapIframeSrc){
+      const matches = mapIframeSrc.match(coordinatesRegex);    
+      if (matches && matches.length === 3) {
+        latitude = parseFloat(matches[1]);
+        longitude = parseFloat(matches[2]);
+      }
     }
-    
     realState = {
       photo: photos, 
       property: {
@@ -179,8 +179,8 @@ async function getPropertyPuntaCana(url: string){
         parking_spaces: parking,
         type_of_business:'Venta',
         address: locationsString,
-        latitude: latitude?.toString(),
-        longitude: longitude?.toString(),
+        latitude: latitude!==undefined ? latitude?.toString() : "",
+        longitude: longitude!==undefined ? longitude?.toString() : "",
         url_map: mapIframeSrc,
         url: url,
       },
@@ -242,9 +242,11 @@ export const scrapearPuntaCana = async (req: Request, resp: Response) => {
         let links = await scrapeWebPage(url);        
         if (!links) {
             return resp.status(402).json({ msg: "Sin resultado" });
-        }        
-        let arrayPuntaCana: IRealState[]=[];          
-        arrayPuntaCana = links?.viviendas.map(async (pta: any) => {
+        }
+          
+        let arrayPuntaCana: IRealState[]=[];         
+        
+        arrayPuntaCana = await Promise.all(links?.viviendas.map(async (pta: any) => {
             const propertyPuntaCana: IRealState = await getPropertyPuntaCana(pta.url);
             return({
               property:propertyPuntaCana.property,
@@ -254,9 +256,10 @@ export const scrapearPuntaCana = async (req: Request, resp: Response) => {
               city: propertyPuntaCana.city,
               sector: propertyPuntaCana.sector,
             });
-        });        
+        }));
         resp.status(200).json(arrayPuntaCana);
     } catch (error) {
+      console.error(error);
         resp.status(401).json({ err: error });
     }
 }
