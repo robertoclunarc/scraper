@@ -4,6 +4,7 @@ import { getUrlWeb, scrapeSite, scrapeAsincrono } from "../controllers/scraping.
 import { scrapearPuntaCana } from '../controllers/punta-cana.controller';
 import { scrapearRemax, migrarRemax } from '../controllers/remax.controller';
 import { scrapearPerezRealState } from '../controllers/perez-real-state.controller';
+import { scrapearMaxCasa } from '../controllers/maxcasa.controller';
 const router:Router = Router();
 
 class HealthChecker {
@@ -50,5 +51,6 @@ router.post('/scraping/web', scrapeSite );
 router.post('/scraping/puntacana', scrapearPuntaCana );
 router.post('/scraping/remax', scrapearRemax );
 router.post('/scraping/perezrealstate', scrapearPerezRealState );
+router.post('/scraping/maxcasa', scrapearMaxCasa );
 
 export default router;
