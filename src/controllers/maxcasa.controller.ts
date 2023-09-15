@@ -15,6 +15,10 @@ export const scrapearMaxCasa = async (req: Request, resp: Response) => {
         }
 
         const realState: IRealState[] = propertyData.map((dat) => {
+            const photos = [
+                { small: dat.parent.featured_image, large: dat.parent.featured_image_medium },
+                { large: dat.parent.featured_image_thumb },
+            ];
             const newData: IRealState = {
               property: {
                 parent_id: dat.parent.uid,
@@ -38,7 +42,7 @@ export const scrapearMaxCasa = async (req: Request, resp: Response) => {
               currency: {iso: dat.currency_sale},
               city: {name: dat.city},
               sector: {name: dat.sector},              
-              photo: [{small: dat.featured_image, large: dat.featured_image_medium}, {large: dat.featured_image_thumb}],
+              photo: photos,
             };
             return newData;
         });

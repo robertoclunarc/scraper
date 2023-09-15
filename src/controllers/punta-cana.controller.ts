@@ -179,8 +179,8 @@ async function getPropertyPuntaCana(url: string){
         parking_spaces: parking,
         type_of_business:'Venta',
         address: locationsString,
-        latitude: latitude!==undefined ? latitude?.toString() : "",
-        longitude: longitude!==undefined ? longitude?.toString() : "",
+        latitude: latitude!==undefined ? latitude?.toString() : "0",
+        longitude: longitude!==undefined ? longitude?.toString() : "0",
         url_map: mapIframeSrc,
         url: url,
       },
@@ -237,17 +237,21 @@ async function scrapeWebPage(url: string) {
 }
 
 export const scrapearPuntaCana = async (req: Request, resp: Response) => {
-    const url: string = encodeURI(req.body.url);    
-    try {        
-        let links = await scrapeWebPage(url);        
+    const url: string = encodeURI(req.body.url);
+    try {
+        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));       
+        let links = await scrapeWebPage(url);
+        //await delay(20000);
+        console.log(links);
         if (!links) {
             return resp.status(402).json({ msg: "Sin resultado" });
         }
           
-        let arrayPuntaCana: IRealState[]=[];         
+        let arrayPuntaCana: IRealState[]=[];
         
         arrayPuntaCana = await Promise.all(links?.viviendas.map(async (pta: any) => {
             const propertyPuntaCana: IRealState = await getPropertyPuntaCana(pta.url);
+           // await delay(20000);
             return({
               property:propertyPuntaCana.property,
               photo:propertyPuntaCana.photo,
